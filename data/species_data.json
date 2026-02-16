@@ -1,0 +1,128 @@
+{
+  "species": {
+    "fomes": {
+      "scientific_name": "Fomes fomentarius",
+      "common_name": "Tinder fungus",
+      "aliases": [
+        "fomes_fomentarius",
+        "fomes fomentarius"
+      ],
+      "role": "BASELINE",
+      "morphology": "Honeycomb standard",
+      "pore_density_per_mm": [
+        2.0,
+        3.0
+      ],
+      "pore_diameter_um": 400,
+      "pore_spacing_um": 400,
+      "source": "Klemm et al. 2024 (SEM validation)",
+      "parameters": {
+        "D_v_D_u": 150.0,
+        "b": 1.0,
+        "rho": 0.2,
+        "a": 0.1,
+        "grid_size": 512,
+        "T_target": 5.0,
+        "dt_initial": 0.0005
+      },
+      "expected_wavelength_px": 46,
+      "justification": "Baseline species for calibration. Spacing ~400 μm establishes calibration factor 8.7 μm/px."
+    },
+    "brumalis": {
+      "scientific_name": "Lentinus brumalis",
+      "common_name": "Winter polypore",
+      "aliases": [
+        "lentinus brumalis",
+        "lentinus_brumalis",
+        "polyporus brumalis",
+        "polyporus_brumalis"
+      ],
+      "role": "MESO_SCALE",
+      "morphology": "Intermediate pores",
+      "pore_density_per_mm": [
+        2.0,
+        4.0
+      ],
+      "pore_diameter_um": 250,
+      "pore_spacing_um": 250,
+      "source": "Validated run (n=5) + taxonomic keys (see thesis docs)",
+      "parameters": {
+        "D_v_D_u": 250.0,
+        "b": 1.0,
+        "rho": 0.4,
+        "a": 0.1,
+        "grid_size": 512,
+        "T_target": 5.0,
+        "dt_initial": 0.0005
+      },
+      "expected_wavelength_px": 33,
+      "justification": "Intermediate-scale reference chosen to maximize morphological separation (Trametes excluded due to density overlap). rho tuned to 0.4 to center pore density within the 2–4 pores/mm biological range while preserving spot topology."
+    },
+    "squamosus": {
+      "scientific_name": "Polyporus squamosus",
+      "common_name": "Dryad's saddle",
+      "aliases": [
+        "polyporus_squamosus",
+        "polyporus squamosus"
+      ],
+      "role": "SPARSE_LIMIT",
+      "morphology": "Giant pores",
+      "pore_density_per_mm": [
+        0.5,
+        2.0
+      ],
+      "pore_diameter_um": 2000,
+      "pore_spacing_um": 2000,
+      "source": "Literature (mature specimens)",
+      "parameters": {
+        "D_v_D_u": 3750.0,
+        "b": 3.0,
+        "rho": 5.0,
+        "a": 0.1,
+        "grid_size": 1024,
+        "T_target": 5.0,
+        "dt_initial": 5e-05
+      },
+      "expected_wavelength_px": 235,
+      "justification": "Extreme sparse limit. Very high D_v/D_u and rho produce giant pores. Validates 8× scale range."
+    },
+    "trametes": {
+      "scientific_name": "Trametes versicolor",
+      "common_name": "Turkey tail",
+      "aliases": [
+        "trametes_versicolor"
+      ],
+      "role": "EXCLUDED",
+      "morphology": "Medium-high density pores",
+      "pore_density_per_mm": [
+        3.0,
+        5.0
+      ],
+      "pore_diameter_um": 300,
+      "source": "Literature",
+      "exclusion_rationale": "Excluded to maximize morphological separation. Density overlaps with brumalis."
+    }
+  },
+  "calibration": {
+    "reference_species": "fomes",
+    "reference_wavelength_px": 46,
+    "reference_spacing_um": 400,
+    "scale_factor_um_per_px": 8.695652,
+    "validation_method": "SEM comparison (Klemm et al. 2024)",
+    "notes": "Calibration factor: 400 μm / 46 px = 8.7 μm/px."
+  },
+  "time_control": {
+    "method": "T_target",
+    "description": "Physical time target ensures comparable simulation duration",
+    "formula": "steps = ceil(T_target / dt_final)",
+    "T_target_default": 5.0
+  },
+  "metadata": {
+    "project": "FungalMorphoSpace",
+    "author": "Mario Ahumada Durán",
+    "version": "0.7.1",
+    "date": "2026-01-03",
+    "model": "Gierer-Meinhardt (1972)",
+    "validation_status": "3 species validated (fomes, brumalis, squamosus); trametes excluded"
+  }
+}

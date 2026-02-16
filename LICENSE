@@ -1,0 +1,172 @@
+# LICENCIA DUAL — FungalMorphoSpace
+
+**Copyright © 2025-2026 Mario Ahumada Durán**  
+**Todos los derechos reservados**
+
+---
+
+## RESUMEN DE LICENCIAMIENTO
+
+Este proyecto opera bajo un modelo de **licencia dual**:
+
+| Uso | Licencia | Costo |
+|-----|----------|-------|
+| Académico / Investigación | CC BY-NC 4.0 | Gratuito |
+| Comercial / Industrial | Licencia Comercial | Contactar autor |
+
+---
+
+## LICENCIA ACADÉMICA (CC BY-NC 4.0)
+
+### Creative Commons Atribución-NoComercial 4.0 Internacional
+
+Este software y su documentación asociada están disponibles bajo licencia 
+CC BY-NC 4.0 para **uso exclusivamente académico, educativo y de investigación**.
+
+**Usted es libre de:**
+
+- **Compartir** — copiar y redistribuir el material en cualquier medio o formato
+- **Adaptar** — remezclar, transformar y construir a partir del material
+
+**Bajo los siguientes términos:**
+
+- **Atribución** — Debe dar crédito de manera adecuada, brindar un enlace a la 
+  licencia, e indicar si se han realizado cambios. Puede hacerlo de cualquier 
+  manera razonable, pero no de forma tal que sugiera que usted o su uso tienen 
+  el apoyo del licenciante.
+
+- **NoComercial** — No puede hacer uso del material con propósitos comerciales.
+
+**Atribución requerida:**
+
+```
+Ahumada Durán, M. (2026). FungalMorphoSpace: Validación computacional de 
+morfologías de himenóforos mediante sistemas de reacción-difusión.
+https://github.com/[tu-repositorio]/FungalMorphoSpace
+```
+
+**Texto completo:** https://creativecommons.org/licenses/by-nc/4.0/legalcode.es
+
+---
+
+## LICENCIA COMERCIAL
+
+### Uso Comercial, Industrial y con Fines de Lucro
+
+El uso de este software, algoritmos, metodologías, datos calibrados o cualquier
+componente derivado para **propósitos comerciales** requiere una **licencia 
+comercial** separada.
+
+**Ejemplos de uso comercial incluyen (pero no se limitan a):**
+
+- Diseño de materiales bioinspirados para manufactura
+- Desarrollo de productos basados en patrones generativos
+- Consultoría industrial utilizando las metodologías del proyecto
+- Integración en software comercial o servicios pagos
+- Uso en empresas de impresión 3D, arquitectura o ingeniería
+- Desarrollo de aplicaciones móviles o web con monetización
+- Entrenamiento de modelos de IA comerciales con datos del proyecto
+
+**Para obtener una licencia comercial, contacte:**
+
+```
+Mario Ahumada Durán
+Email: [tu-email]
+Asunto: "Licencia Comercial - FungalMorphoSpace"
+```
+
+**Incluya en su solicitud:**
+- Descripción del uso previsto
+- Nombre de la empresa/organización
+- Alcance territorial y temporal
+- Volumen de uso estimado
+
+---
+
+## ACTIVOS PROTEGIDOS
+
+Los siguientes componentes están específicamente protegidos bajo esta licencia:
+
+### 1. Software y Algoritmos
+- Motor de simulación Gierer-Meinhardt optimizado
+- TopologyAnalyzer con métricas robustas (FFT radial, componentes conexas)
+- Pipeline de validación integrada
+- Sistema de control temporal (T_target)
+
+### 2. Datos y Calibraciones
+- `species_data.json` con parámetros calibrados por especie
+- Factor de calibración espacial (8.7 µm/px)
+- Rangos de densidad validados experimentalmente
+
+### 3. Metodologías
+- Protocolo de validación multi-especie
+- Análisis de reescalamiento temporal D/ρ
+- Métricas topológicas para morfometría fúngica
+
+### 4. Documentación Técnica
+- Informes de tesis y metodología
+- Guías de blindaje experimental
+- Hojas de ruta de investigación
+
+---
+
+## REGISTRO DE PROPIEDAD INTELECTUAL
+
+Este trabajo está registrado bajo las siguientes modalidades de protección:
+
+### Derecho de Autor (Copyright)
+- **Titular:** Mario Ahumada Durán
+- **Fecha de creación:** Diciembre 2025
+- **País de origen:** Chile
+
+### Base de Datos Propietaria
+El archivo `species_data.json` contiene parámetros calibrados experimentalmente
+que constituyen una base de datos propietaria con valor comercial independiente.
+
+### Trade Secrets
+Los siguientes elementos se consideran secretos comerciales:
+- Metodología de calibración px→µm
+- Parámetros de estabilidad numérica optimizados
+- Protocolos de validación cruzada
+
+---
+
+## DESCARGO DE RESPONSABILIDAD
+
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O
+IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD
+PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O
+TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑOS U OTRAS
+RESPONSABILIDADES, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O CUALQUIER OTRO
+MOTIVO, DERIVADAS DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTRO TIPO
+DE ACCIONES EN EL SOFTWARE.
+
+---
+
+## VIOLACIONES Y CUMPLIMIENTO
+
+El uso no autorizado de este software para fines comerciales sin la licencia
+apropiada constituye una violación de los derechos de autor y puede resultar en:
+
+1. Demanda por infracción de copyright
+2. Demanda por daños y perjuicios
+3. Medidas cautelares para cesar el uso
+4. Recuperación de beneficios obtenidos ilegalmente
+
+Para reportar violaciones: [tu-email]
+
+Recursos relacionados:
+- `LICENSES/CC-BY-NC-4.0.txt` (puntero a la licencia Creative Commons)
+- `LICENSES/COMMERCIAL_TEMPLATE.md` (plantilla de contrato comercial)
+
+---
+
+## HISTORIAL DE VERSIONES
+
+| Versión | Fecha | Cambios |
+|---------|-------|---------|
+| 1.0 | 2026-01-01 | Licencia dual inicial |
+
+---
+
+**© 2025-2026 Mario Ahumada Durán. Todos los derechos reservados.**

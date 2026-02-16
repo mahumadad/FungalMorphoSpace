@@ -1,0 +1,47 @@
+# =============================================================================
+# TURING PATTERN SIMULATOR - DEFAULT CONFIGURATION
+# =============================================================================
+# FungalMorphoSpace Project
+# Author: Mario Ahumada Durán
+# Date: January 2026
+#
+# These are the default parameters for standalone execution of turing_simulator.py
+# For species-specific parameters, use data/species_data.json
+# =============================================================================
+
+# Diffusion parameters
+diffusion:
+  D_u: 1.0                    # Activator diffusion coefficient
+  D_v_D_u_ratio: 150.0        # Inhibitor/Activator ratio (D_v = D_u * ratio)
+
+# Grid parameters  
+grid:
+  size: 512                   # Grid size (NxN)
+  dx: 1.0                     # Spatial resolution (1.0 = pixels)
+
+# Time parameters
+time:
+  dt: 0.0005                  # Time step (may be reduced by CFL stability check)
+  T_target: 5.0               # Target physical time
+  # Note: steps = ceil(T_target / dt_final) computed automatically
+
+# Initial conditions
+initial:
+  random_seed: 42             # For reproducibility
+  perturbation_amplitude: 0.01 # Noise around steady state
+
+# Kinetics model (default: gierer_meinhardt)
+kinetics:
+  model: gierer_meinhardt
+  params:
+    a: 0.1                    # Source term
+    b: 1.0                    # Saturation parameter
+    rho: 0.2                  # Reaction rate
+
+# =============================================================================
+# SPECIES PRESETS (reference only - use data/species_data.json for execution)
+# =============================================================================
+# fomes:      D_v/D_u=150, rho=0.2, b=1.0  -> λ ≈ 46 px
+# brumalis:   D_v/D_u=250, rho=0.7, b=1.0  -> λ ≈ 30 px  
+# squamosus:  D_v/D_u=3750, rho=5.0, b=3.0 -> λ ≈ 230 px
+# =============================================================================

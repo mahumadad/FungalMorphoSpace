@@ -1,0 +1,477 @@
+% ==========================================================================
+% FungalMorphoSpace — SoftwareX manuscript draft
+% Template: Elsevier elsarticle (SoftwareX)
+% ==========================================================================
+\documentclass[review,3p]{elsarticle}
+
+% --- Packages ---
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{lineno}
+
+\modulolinenumbers[5]
+
+% Code listing style
+\lstset{
+  language=Python,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red!70!black},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  frame=single,
+  breaklines=true,
+  captionpos=b,
+}
+
+\journal{SoftwareX}
+
+% ==========================================================================
+\begin{document}
+% ==========================================================================
+
+\begin{frontmatter}
+
+\title{FungalMorphoSpace: A reaction-diffusion simulator for exploring\\
+fungal hymenophore morphogenesis}
+
+\author[inst1]{Mario Ahumada Dur\'{a}n}
+\ead{mario.ahumada@example.com} % TODO: replace with real email
+
+\affiliation[inst1]{organization={Universidad de Chile},  % TODO: verify
+             city={Santiago},
+             country={Chile}}
+
+% ------------------------------------------------------------------
+\begin{abstract}
+FungalMorphoSpace is an open-source Python package for simulating and
+quantifying fungal hymenophore patterns using Gierer--Meinhardt
+reaction-diffusion systems. The software implements a forward-Euler
+solver with CFL-adaptive time-stepping, periodic boundary conditions,
+and robust morphometric analysis including dual-metric wavelength
+estimation (FFT radial spectrum and autocorrelation, both with quality
+control), Euler characteristic computation, and connected-component
+spacing statistics. It ships with empirically calibrated parameter sets
+for three polypore species---\textit{Fomes fomentarius},
+\textit{Lentinus brumalis}, and \textit{Polyporus squamosus}---spanning
+an 8$\times$ wavelength range (\SIrange{33}{235}{px},
+\SIrange{261}{2043}{\micro\metre}). Key features include temporal
+rescaling control ($T_\text{target}$) for cross-species comparability,
+a contract-enforced output schema for reproducibility, and sensitivity
+analysis tools for parameter-space exploration. FungalMorphoSpace
+serves as a hypothesis-generation and morphospace-exploration tool for
+researchers in fungal developmental biology, computational morphogenesis,
+and bio-inspired materials design.
+\end{abstract}
+
+\begin{keyword}
+Reaction-diffusion \sep
+Turing patterns \sep
+Fungal morphogenesis \sep
+Hymenophore \sep
+Pattern formation \sep
+Gierer--Meinhardt \sep
+Polypores \sep
+Computational biology
+\end{keyword}
+
+\end{frontmatter}
+
+% ------------------------------------------------------------------
+\linenumbers
+
+% ==================================================================
+\section{Motivation and significance}
+\label{sec:motivation}
+% ==================================================================
+
+The spore-bearing surfaces of polypore fungi---their
+hymenophores---display a remarkable diversity of spatial patterns:
+regular hexagonal pores in \textit{Fomes fomentarius}, fine-grained
+pores in \textit{Lentinus brumalis}, and coarse pores in
+\textit{Polyporus squamosus}. Despite apparent morphological
+differences, Kuhar et al.~\cite{kuhar2022} proposed that these
+structures represent topological variants of a single self-organizing
+mechanism governed by reaction-diffusion (RD) dynamics, as originally
+formulated by Turing~\cite{turing1952}.
+
+Testing this hypothesis computationally requires tools that can
+(i)~generate patterns across diverse parameter regimes, (ii)~quantify
+morphological features objectively, and (iii)~compare simulated
+outputs with empirical measurements. While general-purpose RD
+simulators exist, none provides an integrated pipeline tailored to
+fungal morphogenesis that includes species-specific calibration,
+topological analysis, and reproducible output contracts.
+
+FungalMorphoSpace addresses this gap by providing:
+\begin{itemize}
+  \item A modular Gierer--Meinhardt simulator with CFL-adaptive
+        stability and selectable kinetics;
+  \item Quantitative morphometric and topological analysis
+        (wavelength, Euler characteristic, spacing statistics);
+  \item Calibrated parameter presets for three validated polypore
+        species;
+  \item Reproducible, contract-enforced output schemas;
+  \item Sensitivity analysis tools for systematic morphospace
+        exploration.
+\end{itemize}
+
+The software targets three user communities: (a)~mycologists and
+developmental biologists studying pattern formation in fungi,
+(b)~computational biologists modeling self-organization, and
+(c)~materials scientists exploring bio-inspired porous architectures.
+
+
+% ==================================================================
+\section{Software description}
+\label{sec:description}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\subsection{Software architecture}
+\label{sec:architecture}
+
+FungalMorphoSpace is organized into five modules
+(Fig.~\ref{fig:architecture}):
+
+\begin{description}
+  \item[\texttt{core}] Turing pattern simulator with polymorphic
+    kinetics models (Gierer--Meinhardt, Schnakenberg, Gray--Scott).
+  \item[\texttt{analysis}] Topology analyzer (Euler characteristic,
+    connected components) and morphometric tools (FFT and
+    autocorrelation wavelength, spacing statistics, isotropy index).
+  \item[\texttt{runners}] Validation pipeline orchestrating
+    single-species, multi-species, and sensitivity runs with progress
+    reporting and statistical aggregation.
+  \item[\texttt{contracts}] Output schema definitions ensuring
+    machine-readable CSV reproducibility across versions.
+  \item[\texttt{utils}] Parameter sweep tools and repository cleanup
+    utilities.
+\end{description}
+
+% TODO: Generate architecture diagram and place in figures/
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figures/architecture.pdf}
+%   \caption{Modular architecture of FungalMorphoSpace.}
+%   \label{fig:architecture}
+% \end{figure}
+
+% ------------------------------------------------------------------
+\subsection{Mathematical model}
+\label{sec:model}
+
+The core simulator implements the Gierer--Meinhardt
+system~\cite{gierer1972}:
+
+\begin{equation}
+\label{eq:gm}
+\begin{aligned}
+  \frac{\partial u}{\partial t}
+    &= D_u \nabla^2 u + \rho\!\left(\frac{u^2}{v + \varepsilon}
+      - b\,u + a\right), \\[4pt]
+  \frac{\partial v}{\partial t}
+    &= D_v \nabla^2 v + \rho\!\left(u^2 - v\right),
+\end{aligned}
+\end{equation}
+
+\noindent where $u$ is a short-range activator, $v$ a long-range
+inhibitor, $D_u$ and $D_v$ are diffusion coefficients, $\rho$ is
+the kinetic intensity (a proxy for metabolic activity), and
+$\varepsilon = 10^{-6}$ prevents numerical singularity in the
+autocatalytic term.
+
+The homogeneous steady state is
+$u_0 = (a + 1)/b$, $v_0 = u_0^2$. Turing instability requires
+$D_v/D_u \gg 1$; pattern wavelength depends jointly on $D_v/D_u$
+and $\rho$.
+
+\paragraph{Temporal rescaling.}
+Under the change of variable $\tau = \rho\,t$, the effective
+diffusion coefficients become $D_u^* = D_u / \rho$ and
+$D_v^* = D_v / \rho$. This reveals that the characteristic wavelength
+$\lambda$ depends on the ratio $D_v / \rho$, not $D_v$ alone---a key
+insight that resolves cases where increasing $D_v/D_u$ paradoxically
+\emph{decreases} $\lambda$ when $\rho$ increases simultaneously
+(the ``Brumalis paradox''; see Table~\ref{tab:species}).
+
+% ------------------------------------------------------------------
+\subsection{Numerical implementation}
+\label{sec:numerical}
+
+Spatial discretization uses a second-order five-point finite-difference
+stencil on a square grid ($N \times N$, $N \in \{256, 512, 1024\}$)
+with periodic boundary conditions. Time integration uses the explicit
+(forward) Euler method with adaptive time-stepping via the CFL
+condition:
+
+\begin{equation}
+\label{eq:cfl}
+  \Delta t \leq \frac{(\Delta x)^2}{4\,\max(D_u,\, D_v)},
+\end{equation}
+
+\noindent reduced by a safety factor of $0.8$ to ensure stability for
+stiff reactions at high $D_v/D_u$ ratios. Temporal comparability
+across species is enforced through a target physical time $T_\text{target}$,
+from which the number of steps is computed as
+$n_\text{steps} = \lceil T_\text{target} / \Delta t_\text{final}\rceil$.
+
+A critical numerical fix prevents catastrophic blowup in the
+$u^2 / v$ term: a floor value $v_\text{floor} = 10^{-6}$ is enforced
+after each time step, complementing the $\varepsilon$ regularization
+in the kinetic function.
+
+% ------------------------------------------------------------------
+\subsection{Morphometric and topological analysis}
+\label{sec:analysis}
+
+Pattern quantification employs two complementary approaches:
+
+\paragraph{Wavelength estimation.}
+Two independent methods provide robustness:
+\begin{enumerate}
+  \item \textbf{FFT radial spectrum}: the 2D power spectrum is
+    radially averaged; the dominant peak above a minimum frequency
+    ($\geq 2$ cycles per domain) yields $\lambda_\text{FFT}$.
+    Quality control (QC) requires peak prominence
+    $\geq 3\times$ median background.
+  \item \textbf{Autocorrelation}: the 2D autocorrelation (via the
+    Wiener--Khinchin theorem) is radially averaged; $\lambda_\text{AC}$
+    is the position of the first maximum after the first minimum.
+\end{enumerate}
+
+The pipeline selects the best estimate via a QC cascade:
+FFT (if QC pass) $\to$ autocorrelation (if QC pass) $\to$ fallback
+(first finite positive value, marked as QC fail).
+
+\paragraph{Topological metrics.}
+\begin{itemize}
+  \item \textbf{Euler characteristic}
+    $\chi = N_\text{components} - N_\text{holes}$, computed via
+    \texttt{skimage.measure.euler\_number}~\cite{euler_number_skimage}
+    with 8-connectivity. Spots yield $\chi > 0$; labyrinths
+    $\chi \approx 0$; networks $\chi < 0$.
+  \item \textbf{Connected components}: count and centroids of
+    binarized foreground regions, replacing the noise-sensitive local
+    maxima detection used in earlier versions.
+  \item \textbf{Spacing statistics}: nearest-neighbor distances from
+    component centroids (via KD-tree), yielding mean spacing and
+    coefficient of variation as regularity measures.
+  \item \textbf{Isotropy index}: angular distribution of 2D FFT power;
+    $I = 1$ for perfectly isotropic patterns.
+\end{itemize}
+
+% ------------------------------------------------------------------
+\subsection{Calibrated species database}
+\label{sec:species}
+
+Table~\ref{tab:species} summarizes the three validated species.
+Parameters were calibrated empirically by adjusting $D_v/D_u$,
+$\rho$, and $b$ until simulated $\lambda$ matched observed pore
+spacings from the literature. The spatial calibration factor
+$\SI{8.7}{\micro\metre/px}$ derives from \textit{F.~fomentarius}
+scanning electron microscopy data~\cite{klemm2024}.
+
+\begin{table}[ht]
+\centering
+\caption{Calibrated species parameters and validation results.}
+\label{tab:species}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+Species & Key & $D_v/D_u$ & $\rho$ & $b$ & Grid
+  & $\lambda$ (px) & $\lambda$ (\si{\micro\metre}) \\
+\midrule
+\textit{F.~fomentarius} & \texttt{fomes}
+  & 150 & 0.2 & 1.0 & 512 & 46 & 400 \\
+\textit{L.~brumalis}    & \texttt{brumalis}
+  & 250 & 0.4 & 1.0 & 512 & 33 & 261 \\
+\textit{P.~squamosus}   & \texttt{squamosus}
+  & 3750 & 5.0 & 3.0 & 1024 & 235 & 2043 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Transparency note.}
+These parameters were obtained by empirical fitting, not from
+independent biophysical measurements. The software therefore serves as
+an exploration and hypothesis-generation tool rather than an
+\emph{ab initio} predictor. Strategies for non-tautological parameter
+anchoring---e.g., deriving $D_\text{eff}$ from measured substrate
+porosity---are discussed in the project documentation.
+
+
+% ==================================================================
+\section{Illustrative examples}
+\label{sec:examples}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\subsection{Multi-species validation}
+
+\begin{lstlisting}[caption={Full validation suite.},label=lst:validation]
+# Validate all 3 species (5 replicates, high resolution)
+python scripts/run_integrated_validation.py \
+    --species all --n_runs 5 --grid 1024
+\end{lstlisting}
+
+This generates a comprehensive comparison figure with pattern images,
+wavelength measurements, and a scaling-law plot. Across the three
+species, log-log regression yields
+$\lambda_\text{sim} \propto \text{Size}_\text{bio}^{0.96}$
+($R^2 \approx 0.997$, $N = 3$; illustrative, not statistically
+powered).
+
+% ------------------------------------------------------------------
+\subsection{Programmatic API}
+
+\begin{lstlisting}[caption={Python API usage.},label=lst:api]
+from fungalmorphospace.core import (
+    TuringSimulator, GiererMeinhardtKinetics)
+from fungalmorphospace.analysis import TopologyAnalyzer
+
+# Configure and run
+kinetics = GiererMeinhardtKinetics(
+    rho=0.2, a=0.1, b=1.0)
+sim = TuringSimulator(
+    kinetics_model=kinetics,
+    D_u=0.1, D_v=15.0, grid_size=512)
+sim.initialize(perturbation_amplitude=0.1)
+sim.run(num_steps=10000)
+
+# Analyze
+analyzer = TopologyAnalyzer(sim.u, dx=1.0)
+metrics = analyzer.compute_all_metrics()
+print(f"Lambda: {metrics['wavelength_fft']:.1f} px")
+print(f"Euler: {metrics['euler_characteristic']}")
+\end{lstlisting}
+
+% ------------------------------------------------------------------
+\subsection{Topological continuity}
+
+The script \texttt{test\_laminillas.py} demonstrates that pores and
+gills are topological variants: varying $D_v/D_u$ while tracking
+$\chi$ reveals a smooth transition from isolated spots ($\chi > 0$)
+through labyrinths ($\chi \approx 0$) to connected networks
+($\chi < 0$), all generated by the same Gierer--Meinhardt mechanism.
+
+% ------------------------------------------------------------------
+\subsection{Sensitivity analysis}
+
+\begin{lstlisting}[caption={Parameter sweep.},label=lst:sweep]
+from fungalmorphospace.utils.sensitivity_analysis \
+    import SensitivityAnalyzer
+
+sa = SensitivityAnalyzer(base_params={
+    'D_u': 1.0, 'grid_size': 256,
+    'dx': 1.0, 'dt': 0.0005,
+    'steps': 5000, 'model': 'gierer_meinhardt'})
+
+df = sa.sweep_2d(
+    'D_v_D_u', [50, 100, 200, 400],
+    'rho', [0.1, 0.2, 0.5, 1.0])
+\end{lstlisting}
+
+
+% ==================================================================
+\section{Impact}
+\label{sec:impact}
+% ==================================================================
+
+\subsection{Scientific contributions}
+
+FungalMorphoSpace has enabled:
+\begin{itemize}
+  \item Computational validation of the Kuhar hypothesis across three
+    species spanning an 8$\times$ wavelength range;
+  \item Discovery of the temporal rescaling effect ($D/\rho$ as
+    effective diffusion), resolving non-monotonic scaling behavior;
+  \item Demonstration of topological continuity between morphotypes
+    (spots $\leftrightarrow$ labyrinths) within a single model;
+  \item Quantitative allometric scaling with
+    $R^2 \approx 0.997$ ($N = 3$, illustrative).
+\end{itemize}
+
+\subsection{Broader applications}
+
+Beyond mycology, the software provides:
+\begin{itemize}
+  \item A pedagogical tool for teaching pattern formation and
+    self-organization in undergraduate or graduate courses;
+  \item A generative engine for bio-inspired porous architectures
+    in biomaterials design;
+  \item A baseline framework for integrating molecular data with
+    morphogenetic models.
+\end{itemize}
+
+\subsection{Limitations and future directions}
+
+\textbf{Current limitations:}
+\begin{itemize}
+  \item Parameters are empirically calibrated (fitted to observed
+    $\lambda$), limiting predictive power. The software serves as a
+    hypothesis-generation tool.
+  \item Simulations are 2D; real hymenophores are 3D surfaces
+    (although locally planar approximations are reasonable).
+  \item Only $N = 3$ species have been validated, providing limited
+    statistical power for scaling-law inference.
+  \item The explicit Euler solver, while stable with CFL control,
+    becomes computationally expensive at very high $D_v/D_u$ ratios.
+\end{itemize}
+
+\textbf{Planned extensions:}
+\begin{itemize}
+  \item Non-tautological parameter anchoring via measured substrate
+    porosity and diffusion coefficients~\cite{klemm2024};
+  \item Extension to $N > 10$ species for robust allometric scaling;
+  \item 3D simulations with surface curvature effects;
+  \item Machine learning for parameter inference from microscopy
+    images;
+  \item Implicit or semi-implicit solvers for improved efficiency.
+\end{itemize}
+
+
+% ==================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+% ==================================================================
+
+FungalMorphoSpace demonstrates that the morphological diversity of
+fungal hymenophores is consistent with parametric variation within a
+single Gierer--Meinhardt reaction-diffusion framework. The software
+provides a reproducible, well-documented pipeline for simulating
+patterns, extracting topological and morphometric features, and
+exploring the accessible morphospace. While the current empirical
+calibration approach limits \emph{ab initio} prediction, the tool
+enables systematic hypothesis generation and complements experimental
+studies of fungal developmental biology.
+
+The package is available under a CC~BY-NC~4.0 license at
+\url{https://github.com/mahumada408/FungalMorphoSpace}.
+
+
+% ==================================================================
+\section*{Conflict of interest}
+% ==================================================================
+The author declares no conflict of interest.
+
+
+% ==================================================================
+\section*{Acknowledgements}
+% ==================================================================
+% TODO: Add acknowledgements as appropriate.
+
+
+% ==================================================================
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+% ==================================================================
+
+\end{document}

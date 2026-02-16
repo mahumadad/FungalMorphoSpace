@@ -1,0 +1,61 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "FungalMorphoSpace"
+abstract: >-
+  A Python package for simulating and quantifying fungal hymenophore
+  morphogenesis using Gierer-Meinhardt reaction-diffusion systems.
+  Enables computational exploration of the hypothesis that diverse
+  hymenophore morphologies (pores, gills, labyrinths) emerge from
+  parametric variation within a single self-organizing mechanism.
+authors:
+  - family-names: "Ahumada Duran"
+    given-names: "Mario"
+version: "0.7.3.post6"
+date-released: "2026-01-12"
+license: CC-BY-NC-4.0
+repository-code: "https://github.com/mahumada408/FungalMorphoSpace"
+keywords:
+  - fungi
+  - morphogenesis
+  - reaction-diffusion
+  - turing-patterns
+  - computational-biology
+  - polypores
+  - hymenophore
+  - gierer-meinhardt
+  - pattern-formation
+  - topology
+references:
+  - type: article
+    authors:
+      - family-names: "Kuhar"
+        given-names: "Francisco"
+    title: "Pattern formation features might explain homoplasy: Fertile surfaces in Gilled Mushrooms as a case study"
+    journal: "Theory in Biosciences"
+    year: 2022
+    volume: 141
+    start: 427
+    end: 441
+  - type: article
+    authors:
+      - family-names: "Turing"
+        given-names: "Alan M."
+    title: "The chemical basis of morphogenesis"
+    journal: "Philosophical Transactions of the Royal Society of London. Series B"
+    year: 1952
+    volume: 237
+    start: 37
+    end: 72
+  - type: article
+    authors:
+      - family-names: "Gierer"
+        given-names: "Alfred"
+      - family-names: "Meinhardt"
+        given-names: "Hans"
+    title: "A theory of biological pattern formation"
+    journal: "Kybernetik"
+    year: 1972
+    volume: 12
+    start: 30
+    end: 39

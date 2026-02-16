@@ -1,0 +1,11 @@
+Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+
+This repository is distributed under a dual-licensing model.
+
+For non-commercial academic/research/educational use, the content is available under:
+  CC BY-NC 4.0
+
+You can view a human-readable summary and the full legal code at:
+  https://creativecommons.org/licenses/by-nc/4.0/
+
+This file is provided as a convenience pointer; the authoritative license text is the Creative Commons legal code.
