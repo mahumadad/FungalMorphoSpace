@@ -1,0 +1,27 @@
+{
+  "title": "FungalMorphoSpace: A reaction-diffusion simulator for exploring fungal hymenophore morphogenesis",
+  "description": "Open-source Python package for simulating Gierer-Meinhardt reaction-diffusion patterns of fungal hymenophores and quantifying them with a morphometric and topological analysis suite (FFT/autocorrelation wavelength with quality control, Euler characteristic, connected-component spacing). Includes calibrated presets for three polypore species, a contract-enforced reproducible output schema, and a three-node (immobile-node) module with an analytical linear-stability utility. Released to accompany the SoftwareX submission.",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "cc-by-nc-4.0",
+  "creators": [
+    { "name": "Ahumada Durán, Mario" }
+  ],
+  "keywords": [
+    "reaction-diffusion",
+    "Turing patterns",
+    "fungal morphogenesis",
+    "hymenophore",
+    "Gierer-Meinhardt",
+    "polypores",
+    "computational biology",
+    "pattern formation"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/mahumadad/FungalMorphoSpace",
+      "scheme": "url"
+    }
+  ]
+}
