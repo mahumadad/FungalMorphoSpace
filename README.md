@@ -32,7 +32,7 @@ Spatial calibration: 8.7 um/px (derived from *F. fomentarius* SEM data; [Klemm e
 
 ```bash
 # Clone the repository
-git clone https://github.com/mahumada408/FungalMorphoSpace.git
+git clone https://github.com/mahumadad/FungalMorphoSpace.git
 cd FungalMorphoSpace
 
 # Install dependencies
@@ -140,7 +140,7 @@ If you use this software in your research, please cite:
                   simulator for fungal hymenophores},
   year         = {2026},
   version      = {0.7.3.post6},
-  url          = {https://github.com/mahumada408/FungalMorphoSpace}
+  url          = {https://github.com/mahumadad/FungalMorphoSpace}
 }
 ```
 

@@ -4,7 +4,7 @@ Thank you for your interest in contributing to FungalMorphoSpace! This document 
 
 ## Reporting Bugs
 
-1. Check the [issue tracker](https://github.com/mahumada408/FungalMorphoSpace/issues) to see if the bug has already been reported.
+1. Check the [issue tracker](https://github.com/mahumadad/FungalMorphoSpace/issues) to see if the bug has already been reported.
 2. If not, open a new issue with:
    - A clear, descriptive title
    - Steps to reproduce the bug
@@ -23,7 +23,7 @@ Open an issue with the `enhancement` label describing:
 
 ```bash
 # Clone the repository
-git clone https://github.com/mahumada408/FungalMorphoSpace.git
+git clone https://github.com/mahumadad/FungalMorphoSpace.git
 cd FungalMorphoSpace
 
 # Create a virtual environment
