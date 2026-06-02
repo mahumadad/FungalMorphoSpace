@@ -362,11 +362,32 @@ Resultado (grilla escalada ∝√D para comparar el patrón adimensional):
 - El spacing no-lineal está un factor constante (~2.5×) por encima de λ* lineal (coarsening);
   irrelevante para la ley de escala (ambos ∝√D).
 
+**Factor de coarsening (caracterizado):** spacing/λ* ≈ **2.4, constante** — independiente de D
+(2.36→2.48 de D=5 a 20) **y de γ** (2.32 vs 2.36 a γ=1.0 vs 0.3). Que no dependa de la fuerza
+de la no-linealidad indica que la selección no-lineal de longitud de onda la fija la geometría
+de la banda de dispersión, no la magnitud del cúbico. → la ley √D transfiere lineal→no-lineal
+con solo un offset multiplicativo constante.
+
+**Regla unificadora de topología (condición necesaria):** enumerando las estructuras de signo
+Turing-capaces a D igual, **el 100% acopla el nodo inmóvil al inhibidor v** (`w→v` o `v→w`≠0);
+ninguna funciona sin ese acoplamiento. El acoplamiento al activador u NO es necesario (90%; hay
+casos que patronan sin tocar u) y `w_self` es irrelevante (~51%). Mecánicamente: el nodo
+inmóvil suple la inhibición de largo alcance que normalmente aporta el inhibidor rápido vía
+disparidad, así que **debe actuar a través del inhibidor**. (Esto explica por qué la "biología
+obvia" —w dirigido por u, w inhibe u— estaba en la clase 0%.)
+
 **Conclusión P2 (analítica + no-lineal):** una red de 3 nodos con difusión igual y el nodo
 inmóvil acoplado al inhibidor genera patrones de himenóforo genuinos cuya escala se fija por
 `√(D absoluta)` — alcanzando el rango biológico **sin disparidad de difusión**. La
 longitud de onda la fija la longitud de difusión, no el ratio; el `D_v/D_u=3750` del modelo
 original es un proxy de esa longitud, no un requisito fundamental.
+
+> **Pendiente (run para figura del paper):** la confirmación no-lineal se hizo a escala
+> *brumalis/fomes* (grid ≤640). La validación a **escala *squamosus* (~230 px ≈ 2000 µm)**
+> exige **grilla grande (~1408) y D≈270** — un hongo real necesita grid grande. Es el run
+> pesado pendiente (`confirm_three_node.py --D 270 --grid 1408`, ~1–2 h por el CFL explícito).
+> La ley √D predice ~16 spots con spacing ~230 px; ese punto cierra la figura spacing-vs-√D
+> abarcando las 3 especies.
 
 ### 10.5 Lección de método
 
