@@ -65,11 +65,15 @@ for three polypore species---\textit{Fomes fomentarius},
 an 8$\times$ wavelength range (\SIrange{33}{235}{px},
 \SIrange{261}{2043}{\micro\metre}). Key features include temporal
 rescaling control ($T_\text{target}$) for cross-species comparability,
-a contract-enforced output schema for reproducibility, and sensitivity
-analysis tools for parameter-space exploration. FungalMorphoSpace
-serves as a hypothesis-generation and morphospace-exploration tool for
-researchers in fungal developmental biology, computational morphogenesis,
-and bio-inspired materials design.
+a contract-enforced output schema for reproducibility, sensitivity
+analysis tools, and an optional three-node (immobile-node) module with a
+linear-stability utility that lets users reach the same morphospace at
+equal diffusion---making explicit that pattern scale is governed by a
+reaction--diffusion length rather than by an extreme diffusion ratio.
+Parameters are calibrated empirically, so FungalMorphoSpace is a
+hypothesis-generation and morphospace-exploration tool---not an
+\emph{ab initio} predictor---for researchers in fungal developmental
+biology, computational morphogenesis, and bio-inspired materials design.
 \end{abstract}
 
 \begin{keyword}
@@ -190,9 +194,33 @@ $\varepsilon = 10^{-6}$ prevents numerical singularity in the
 autocatalytic term.
 
 The homogeneous steady state is
-$u_0 = (a + 1)/b$, $v_0 = u_0^2$. Turing instability requires
-$D_v/D_u \gg 1$; pattern wavelength depends jointly on $D_v/D_u$
-and $\rho$.
+$u_0 = (a + 1)/b$, $v_0 = u_0^2$. Classical two-species Turing
+instability requires a diffusion disparity $D_v/D_u \gg 1$, and the
+pattern wavelength then depends jointly on $D_v/D_u$ and $\rho$. This
+disparity is not fundamental, however: it is one way to set the
+underlying reaction--diffusion length $\ell \sim \sqrt{D_\text{eff}/k}$
+that fixes the wavelength. An immobile (non-diffusing) third species
+coupled to the inhibitor produces the same instability at \emph{equal}
+diffusion, as established for binding substrates and morphogen
+adsorption~\cite{korvasova2015,nesterenko2017} and catalogued for
+three-node networks with equally diffusing signals~\cite{marcon2016}.
+FungalMorphoSpace includes an optional three-node module
+(Sec.~\ref{sec:threenode}) implementing this mechanism, which lets users
+contrast disparity-driven and immobile-node routes to the same morphospace.
+
+\subsection{Three-node (immobile-node) module}
+\label{sec:threenode}
+
+The module \texttt{core.three\_node} adds two diffusing morphogens and a
+third immobile field $w$ (interpreted as local hyphal density), with a
+linear-stability utility (\texttt{dispersion\_growth\_rate},
+\texttt{fastest\_growing\_wavelength}) that computes the Turing band
+analytically from the reaction Jacobian. It is intended for exploring
+\emph{whether} a given topology patterns and at what scale \emph{before}
+committing to a simulation. We stress that the underlying equal-diffusion
+mechanism is established prior art~\cite{korvasova2015,nesterenko2017,marcon2016,raspopovic2014};
+the module's role here is to make that mechanism convenient to apply to
+hymenophore morphospace, not to introduce a new mechanism.
 
 \paragraph{Temporal rescaling.}
 Under the change of variable $\tau = \rho\,t$, the effective
@@ -379,6 +407,41 @@ df = sa.sweep_2d(
     'rho', [0.1, 0.2, 0.5, 1.0])
 \end{lstlisting}
 
+% ------------------------------------------------------------------
+\subsection{Equal-diffusion exploration and the wavelength scale law}
+\label{sec:equaldiff}
+
+The three-node module (Sec.~\ref{sec:threenode}) lets users probe whether
+the hymenophore morphospace can be reached \emph{without} a diffusion
+disparity. Using the analytical dispersion utility, a topology in which
+the immobile node couples to the inhibitor is Turing-unstable at
+$D_u = D_v$, and its fastest-growing wavelength follows the
+reaction--diffusion length scaling $\lambda \propto \sqrt{D}$
+(Fig.~\ref{fig:scalelaw}). Nonlinear simulations reproduce this scaling:
+the measured spot spacing tracks $\sqrt{D}$ with a constant offset above
+the linear $\lambda^\ast$ (coarsening factor $\approx 2.4$, independent of
+$D$ and of the saturation strength). The scripts
+\texttt{search\_turing\_topology.py}, \texttt{confirm\_three\_node.py},
+and \texttt{figure\_scale\_law.py} reproduce these results.
+
+This example illustrates the software's analytical value: it shows that the
+extreme ratio $D_v/D_u = 3750$ used for the coarse-pored
+\textit{P.~squamosus} preset (Table~\ref{tab:species}) is not a necessary
+feature of the model but one parameterization of the diffusion length;
+the same scale is reachable at equal diffusion via the immobile node.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.78\textwidth]{../results/three_node/figure_scale_law.png}
+  \caption{Wavelength versus $\sqrt{D}$ at equal diffusion ($D_u=D_v$) for
+  the immobile-node topology. Linear dispersion prediction (circles) and
+  nonlinear simulated spacing (squares) are both straight lines in
+  $\sqrt{D}$; simulated points (stars) lie on the nonlinear curve. Dotted
+  lines mark the biological pore spacings of the three calibrated species.
+  Generated by \texttt{figure\_scale\_law.py}.}
+  \label{fig:scalelaw}
+\end{figure}
+
 
 % ==================================================================
 \section{Impact}
@@ -387,16 +450,22 @@ df = sa.sweep_2d(
 
 \subsection{Scientific contributions}
 
-FungalMorphoSpace has enabled:
+FungalMorphoSpace has supported:
 \begin{itemize}
-  \item Computational validation of the Kuhar hypothesis across three
-    species spanning an 8$\times$ wavelength range;
-  \item Discovery of the temporal rescaling effect ($D/\rho$ as
-    effective diffusion), resolving non-monotonic scaling behavior;
+  \item Computational \emph{exploration} of the Kuhar
+    hypothesis~\cite{kuhar2022}: the three calibrated species, spanning an
+    8$\times$ wavelength range, are reproducible as parametric variants of
+    one Gierer--Meinhardt mechanism (consistency, not independent
+    validation; see Limitations);
+  \item A transparent treatment of the $D/\rho$ nondimensionalization
+    (effective diffusion), which clarifies cases where increasing
+    $D_v/D_u$ while raising $\rho$ \emph{decreases} $\lambda$;
   \item Demonstration of topological continuity between morphotypes
     (spots $\leftrightarrow$ labyrinths) within a single model;
-  \item Quantitative allometric scaling with
-    $R^2 \approx 0.997$ ($N = 3$, illustrative).
+  \item An analytical demonstration that the morphospace scale is governed
+    by a diffusion length and is reachable at equal diffusion via an
+    immobile node (Sec.~\ref{sec:equaldiff}), so that extreme
+    diffusion ratios are not a necessary model ingredient.
 \end{itemize}
 
 \subsection{Broader applications}
@@ -415,21 +484,43 @@ Beyond mycology, the software provides:
 
 \textbf{Current limitations:}
 \begin{itemize}
-  \item Parameters are empirically calibrated (fitted to observed
-    $\lambda$), limiting predictive power. The software serves as a
-    hypothesis-generation tool.
+  \item \emph{Empirical calibration (the central caveat).} Parameters are
+    fitted to observed $\lambda$, not derived from independent biophysical
+    measurements, so reproducing a wavelength is a consistency check, not a
+    prediction. Because $\lambda$ is set by a single effective
+    reaction--diffusion length, many parameter combinations and indeed
+    several distinct mechanisms reproduce the same $\lambda$; breaking this
+    degeneracy requires measuring the underlying diffusion and reaction
+    rates (Future directions).
+  \item \emph{The pattern-forming mechanism is not novel.} Equal-diffusion
+    Turing via an immobile/binding species is established theory, including
+    applications to other organisms~\cite{korvasova2015,nesterenko2017,marcon2016,raspopovic2014};
+    the contribution here is the application to fungal hymenophores, the
+    accompanying reproducible tooling, and the demonstration that the prior
+    extreme-ratio parameterization is unnecessary.
+  \item \emph{Stability caveat for the immobile-node module.}
+    Reaction-diffusion-ODE systems with an autocatalytic immobile component
+    need not admit stable Turing patterns~\cite{marciniakczochra2016}; the
+    preset topology used here is non-autocatalytic (binding-type), but
+    long-time stability of the nonlinear patterns should be verified per
+    application.
   \item Simulations are 2D; real hymenophores are 3D surfaces
-    (although locally planar approximations are reasonable).
-  \item Only $N = 3$ species have been validated, providing limited
-    statistical power for scaling-law inference.
-  \item The explicit Euler solver, while stable with CFL control,
-    becomes computationally expensive at very high $D_v/D_u$ ratios.
+    (locally planar approximations are reasonable).
+  \item Only $N = 3$ species are calibrated, giving limited statistical
+    power for scaling-law inference.
+  \item The explicit Euler solver, while stable with CFL control, becomes
+    expensive at very high $D_v/D_u$ ratios and large grids
+    (e.g.\ \textit{P.~squamosus}-scale wavelengths).
 \end{itemize}
 
 \textbf{Planned extensions:}
 \begin{itemize}
-  \item Non-tautological parameter anchoring via measured substrate
-    porosity and diffusion coefficients~\cite{klemm2024};
+  \item Non-tautological parameter anchoring via independently measured
+    diffusion and reaction rates---e.g.\ substrate porosity and
+    microstructure~\cite{klemm2024} and \mbox{Ca\textsuperscript{2+}}
+    signal-propagation data in mycelial networks~\cite{itani2023}---which
+    would discriminate the candidate mechanisms rather than fit the
+    wavelength;
   \item Extension to $N > 10$ species for robust allometric scaling;
   \item 3D simulations with surface curvature effects;
   \item Machine learning for parameter inference from microscopy
@@ -458,15 +549,45 @@ The package is available under a CC~BY-NC~4.0 license at
 
 
 % ==================================================================
+\section*{Code and data availability}
+% ==================================================================
+The source code is available under a CC~BY-NC~4.0 license at
+\url{https://github.com/mahumadad/FungalMorphoSpace}. A versioned release
+will be archived with a DOI (e.g.\ Zenodo) upon publication. All figures and
+tables in this paper are reproducible with the scripts under
+\texttt{scripts/} and the configuration in \texttt{data/species\_data.json}.
+
+% ==================================================================
+\section*{CRediT author contributions}
+% ==================================================================
+\textbf{Mario Ahumada Dur\'{a}n:} Conceptualization, Methodology, Software,
+Validation, Investigation, Writing -- original draft, Writing -- review \&
+editing.
+
+% ==================================================================
+\section*{Declaration of generative AI use}
+% ==================================================================
+The author used an AI assistant (Claude) to support code review, literature
+search and verification, and drafting. All AI-assisted outputs---including
+every cited reference---were verified by the author, who takes full
+responsibility for the content.
+
+% ==================================================================
+\section*{Funding}
+% ==================================================================
+% TODO (author): state funding sources, or "This research received no
+% specific grant from funding agencies in the public, commercial, or
+% not-for-profit sectors."
+
+% ==================================================================
 \section*{Conflict of interest}
 % ==================================================================
-The author declares no conflict of interest.
-
+The author declares no competing financial or non-financial interests.
 
 % ==================================================================
 \section*{Acknowledgements}
 % ==================================================================
-% TODO: Add acknowledgements as appropriate.
+% TODO (author): add acknowledgements as appropriate.
 
 
 % ==================================================================
