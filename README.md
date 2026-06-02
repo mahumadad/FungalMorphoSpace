@@ -4,7 +4,8 @@
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-0.7.3.post6-green.svg)]()
+[![Version](https://img.shields.io/badge/version-0.8.0-green.svg)]()
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20516426.svg)](https://doi.org/10.5281/zenodo.20516426)
 
 ---
 

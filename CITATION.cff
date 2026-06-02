@@ -11,8 +11,9 @@ abstract: >-
 authors:
   - family-names: "Ahumada Duran"
     given-names: "Mario"
-version: "0.7.3.post6"
-date-released: "2026-01-12"
+version: "0.8.0"
+date-released: "2026-06-02"
+doi: "10.5281/zenodo.20516426"
 license: CC-BY-NC-4.0
 repository-code: "https://github.com/mahumadad/FungalMorphoSpace"
 keywords:
@@ -31,12 +32,22 @@ references:
     authors:
       - family-names: "Kuhar"
         given-names: "Francisco"
-    title: "Pattern formation features might explain homoplasy: Fertile surfaces in Gilled Mushrooms as a case study"
+      - family-names: "Terzzoli"
+        given-names: "Leticia"
+      - family-names: "Nouhra"
+        given-names: "Eduardo"
+      - family-names: "Robledo"
+        given-names: "Gerardo"
+      - family-names: "Mercker"
+        given-names: "Moritz"
+    title: "Pattern formation features might explain homoplasy: fertile surfaces in higher fungi as an example"
     journal: "Theory in Biosciences"
     year: 2022
     volume: 141
-    start: 427
-    end: 441
+    issue: 1
+    start: 1
+    end: 11
+    doi: "10.1007/s12064-022-00363-z"
   - type: article
     authors:
       - family-names: "Turing"
