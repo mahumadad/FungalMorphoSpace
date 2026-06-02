@@ -312,6 +312,36 @@ facilita escala grande. Punto científico en sí.
 - **Caveat técnico:** `fastest_growing_wavelength` usa un `k_max` finito; λ* pequeñas pueden
   estar limitadas por el borde del scan (ampliar `k_max` para λ chicas).
 
+### 10.6 Búsqueda de topología y ley de escala (resultado fuerte de P2)
+
+Tras arreglar `fastest_growing_wavelength` (auto-ensanchado del scan; NaN honesto si no hay
+selección de escala finita), se exploró analíticamente (sin simular) el espacio de topologías:
+
+- **La biología "obvia" NO funciona.** Estructura de signos plausible (u activador, v
+  inhibidor, w=densidad hifal *dirigida por u* e inhibiendo u): **0/8000** Turing a D igual.
+- **Qué cableado SÍ funciona.** Enumerando los 3⁵=243 patrones de signo del nodo inmóvil:
+  **46/243** admiten equal-D Turing. Los más robustos acoplan w al **inhibidor** (`w↔v`), con
+  **w desacoplado de u**. Interpretación: el nodo inmóvil debe modular el inhibidor para crear
+  la inhibición de largo alcance que normalmente aporta la disparidad de difusión.
+- **Control de escala monótono: SÍ existe.** En una topología `w↔v` Turing-inestable, varios
+  parámetros (M[0,1], M[1,0], M[1,2], M[2,1]) mueven λ* de forma monótona (verificado
+  analíticamente). → afirmación de control por un parámetro **soportada** para la topología
+  correcta.
+- **Ley de escala — el hallazgo clave.** λ* sigue `√D` a difusión IGUAL:
+  λ*≈3.8 px (D=0.5) → 41.8 px (D=50) → 125 px (D=500). **La escala biológica (33–235 px) se
+  alcanza a D_u=D_v subiendo la D absoluta; la disparidad NO es necesaria para λ grande.**
+- **Dos mecanismos distintos.** En la topología `w↔v`, subir la disparidad D_v/D_u **destruye**
+  la banda de Turing (lo opuesto a Gierer-Meinhardt, que la requiere). GM fija escala por
+  `√(ratio)`; la red de nodo inmóvil la fija por `√(D absoluta)`.
+
+**Conclusión que disuelve la tautología:** la longitud de onda del himenóforo la fija la
+**longitud de difusión `√(D/reacción)`, no el *ratio* de difusión.** El `D_v/D_u=3750` del
+modelo original no es fundamental — es un proxy de longitud de difusión, alcanzable también sin
+disparidad (con un nodo inmóvil que module el inhibidor). Esto convierte el "parámetro
+sospechoso" en uno de (al menos) dos mecanismos que fijan la misma escala. **Es el resultado
+publicable de P2** (pendiente: confirmar por simulación no-lineal a D grande / grilla grande;
+el análisis lineal es el predictor riguroso y el solver está validado contra él).
+
 ### 10.5 Lección de método
 
 La simulación + conteo de spots puede producir **falsos positivos de patronamiento**. El
