@@ -342,6 +342,32 @@ sospechoso" en uno de (al menos) dos mecanismos que fijan la misma escala. **Es 
 publicable de P2** (pendiente: confirmar por simulación no-lineal a D grande / grilla grande;
 el análisis lineal es el predictor riguroso y el solver está validado contra él).
 
+### 10.7 Confirmación no-lineal (opción C) — bucle cerrado
+
+La predicción lineal (§10.6) se confirmó **simulando** la topología `w↔v` a difusión igual
+(`scripts/confirm_three_node.py`). Para que la simulación produjera patrones acotados se
+corrigió `MarconNetwork`: la saturación cúbica ahora actúa en **los tres** nodos (antes solo
+en u, dejando v/w crecer sin cota). El cúbico se anula en el punto fijo, así que el análisis
+lineal (J=M) no cambia.
+
+Resultado (grilla escalada ∝√D para comparar el patrón adimensional):
+
+| D (igual) | spots | spacing (px) | λ* lineal (px) | spacing/√D |
+|-----------|-------|--------------|----------------|------------|
+| 5  | 16 | 24–32 | 12.5 | ~14 |
+| 20 | 14–16 | 51–64 | 25.1 | ~14 |
+
+- **`spacing/√D` ≈ constante** → el patrón no-lineal escala como **√D**, igual que la
+  predicción lineal. Bucle lineal→no-lineal **cerrado**.
+- El spacing no-lineal está un factor constante (~2.5×) por encima de λ* lineal (coarsening);
+  irrelevante para la ley de escala (ambos ∝√D).
+
+**Conclusión P2 (analítica + no-lineal):** una red de 3 nodos con difusión igual y el nodo
+inmóvil acoplado al inhibidor genera patrones de himenóforo genuinos cuya escala se fija por
+`√(D absoluta)` — alcanzando el rango biológico **sin disparidad de difusión**. La
+longitud de onda la fija la longitud de difusión, no el ratio; el `D_v/D_u=3750` del modelo
+original es un proxy de esa longitud, no un requisito fundamental.
+
 ### 10.5 Lección de método
 
 La simulación + conteo de spots puede producir **falsos positivos de patronamiento**. El
