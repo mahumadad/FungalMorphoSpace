@@ -110,7 +110,14 @@ formulated by Turing~\cite{turing1952}.
 Testing this hypothesis computationally requires tools that can
 (i)~generate patterns across diverse parameter regimes, (ii)~quantify
 morphological features objectively, and (iii)~compare simulated
-outputs with empirical measurements. While general-purpose RD
+outputs with empirical measurements. We emphasize at the outset what
+such a tool can and cannot establish: by fitting parameters to observed
+spacings it can show \emph{consistency}---that the morphologies are
+reproducible within the model---but it cannot show that fungi
+\emph{employ} this mechanism. That stronger claim would require deriving
+parameters from independent biophysical measurements and then predicting
+the spacing (Sec.~\ref{sec:impact}). FungalMorphoSpace is built for the
+former, exploratory role. While general-purpose RD
 simulators exist, none provides an integrated pipeline tailored to
 fungal morphogenesis that includes species-specific calibration,
 topological analysis, and reproducible output contracts.
@@ -143,8 +150,7 @@ developmental biologists studying pattern formation in fungi,
 \subsection{Software architecture}
 \label{sec:architecture}
 
-FungalMorphoSpace is organized into five modules
-(Fig.~\ref{fig:architecture}):
+FungalMorphoSpace is organized into five modules:
 
 \begin{description}
   \item[\texttt{core}] Turing pattern simulator with polymorphic
@@ -350,12 +356,13 @@ python scripts/run_integrated_validation.py \
     --species all --n_runs 5 --grid 1024
 \end{lstlisting}
 
-This generates a comprehensive comparison figure with pattern images,
-wavelength measurements, and a scaling-law plot. Across the three
-species, log-log regression yields
-$\lambda_\text{sim} \propto \text{Size}_\text{bio}^{0.96}$
-($R^2 \approx 0.997$, $N = 3$; illustrative, not statistically
-powered).
+This generates a comprehensive comparison figure with pattern images and
+wavelength measurements for the three presets, which reproduce the
+observed pore spacings across an 8$\times$ range. We deliberately report
+no allometric exponent or goodness-of-fit: with $N = 3$ calibrated
+species, any such regression is statistically meaningless and would
+overstate the evidence. The presets demonstrate \emph{reachability} of
+the observed scales within one model, not a scaling law.
 
 % ------------------------------------------------------------------
 \subsection{Programmatic API}
@@ -427,8 +434,15 @@ and \texttt{figure\_scale\_law.py} reproduce these results.
 This example illustrates the software's analytical value: it shows that the
 extreme ratio $D_v/D_u = 3750$ used for the coarse-pored
 \textit{P.~squamosus} preset (Table~\ref{tab:species}) is not a necessary
-feature of the model but one parameterization of the diffusion length;
-the same scale is reachable at equal diffusion via the immobile node.
+feature of the \emph{model} but one parameterization of the diffusion
+length; the same scale is reachable at equal diffusion via the immobile
+node. We stress that this is a statement about model parameterization and
+known mechanism classes, \emph{not} a biological claim: it does not show
+that extreme differential diffusion is absent in fungi, nor that the
+immobile node has a confirmed fungal correlate. The interpretation of $w$
+as local hyphal density is a hypothesis; discriminating among these
+mechanisms in real polypores requires the measurements discussed in
+Sec.~\ref{sec:impact}.
 
 \begin{figure}[ht]
   \centering
@@ -534,15 +548,19 @@ Beyond mycology, the software provides:
 \label{sec:conclusions}
 % ==================================================================
 
-FungalMorphoSpace demonstrates that the morphological diversity of
-fungal hymenophores is consistent with parametric variation within a
-single Gierer--Meinhardt reaction-diffusion framework. The software
-provides a reproducible, well-documented pipeline for simulating
-patterns, extracting topological and morphometric features, and
-exploring the accessible morphospace. While the current empirical
-calibration approach limits \emph{ab initio} prediction, the tool
-enables systematic hypothesis generation and complements experimental
-studies of fungal developmental biology.
+FungalMorphoSpace shows that a single Gierer--Meinhardt parameterization
+\emph{can be fitted} to reproduce the pore spacings of three polypore
+species across an 8$\times$ range, and that the same morphospace is also
+reachable by an established equal-diffusion mechanism. We are careful to
+distinguish this---reachability of the observed scales within a model
+class---from the much stronger and unsupported claim that fungi
+\emph{use} this mechanism: the parameters are fitted to the data they
+reproduce, so the result is a consistency check, not a demonstration of a
+developmental mechanism. The software's value is therefore as a
+reproducible, well-documented pipeline for simulating patterns,
+quantifying morphology, and generating falsifiable hypotheses---hypotheses
+whose test requires the independent biophysical measurements outlined in
+Sec.~\ref{sec:impact}, not further fitting.
 
 The package is available under a CC~BY-NC~4.0 license at
 \url{https://github.com/mahumadad/FungalMorphoSpace}.
