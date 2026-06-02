@@ -8,7 +8,7 @@
 
 ---
 
-FungalMorphoSpace is a Python package for simulating and quantifying fungal hymenophore patterns using Gierer-Meinhardt reaction-diffusion systems. It explores the hypothesis that diverse hymenophore morphologies (pores, gills, labyrinths) emerge from parametric variation within a single self-organizing mechanism ([Kuhar et al., 2022](https://doi.org/10.1007/s12064-022-00380-8)).
+FungalMorphoSpace is a Python package for simulating and quantifying fungal hymenophore patterns using Gierer-Meinhardt reaction-diffusion systems. It explores the hypothesis that diverse hymenophore morphologies (pores, gills, labyrinths) emerge from parametric variation within a single self-organizing mechanism ([Kuhar et al., 2022](https://doi.org/10.1007/s12064-022-00363-z)).
 
 ## Key Features
 
@@ -127,7 +127,9 @@ dv/dt = D_v * laplacian(v) + rho * (u^2 - b*v)
 
 A key insight is that effective diffusion D_eff = D/rho jointly determines pattern wavelength, explaining cases where increasing the diffusion ratio *decreases* wavelength when reaction intensity increases simultaneously.
 
-**Important note:** Parameters are currently calibrated empirically (fitted to observed morphologies). The software serves as an exploration and hypothesis-generation tool rather than an ab initio predictor. See `docs/archive/RUTAS_ANCLAJE_NO_TAUTOLOGICO.md` for a discussion of non-tautological anchoring strategies.
+**Important note:** Parameters are currently calibrated empirically (fitted to observed morphologies). The software serves as an exploration and hypothesis-generation tool rather than an ab initio predictor. See `docs/archive/RUTAS_ANCLAJE_NO_TAUTOLOGICO.md` for a discussion of non-tautological anchoring strategies, and `docs/ESTRATEGIA_TESIS.md` for the publication roadmap.
+
+**Grid resolution matters.** Large-wavelength species need a domain that fits several wavelengths. *Polyporus squamosus* defaults to a 1024 grid (where it forms ~28 genuine spots); forcing a smaller grid (e.g. `--grid 512`) collapses it to a single domain-scale blob (1 spot) that is *not* a genuine periodic pattern. The validator now flags this: results report `pattern_genuine` (≥4 resolved spots) and `under_resolved` (fewer than ~3 measured wavelengths fit the domain), and `validation_pass` combines the wavelength QC with the genuine-pattern gate. Keep *squamosus* at its default grid or larger. Note: even at adequate resolution the model's *squamosus* wavelength (~188 px) undershoots the biological target (235 px ≈ 2000 µm) by ~18% — a known limitation, not corrected by tuning the target.
 
 ## Citation
 
@@ -155,7 +157,7 @@ If you use this software in your research, please cite:
 
 1. Turing, A.M. (1952). The chemical basis of morphogenesis. *Phil. Trans. R. Soc. B*, 237, 37-72.
 2. Gierer, A. & Meinhardt, H. (1972). A theory of biological pattern formation. *Kybernetik*, 12, 30-39.
-3. Kuhar, F. et al. (2022). Pattern formation features might explain homoplasy. *Theory in Biosciences*, 141, 427-441.
+3. Kuhar, F. et al. (2022). Pattern formation features might explain homoplasy: fertile surfaces in higher fungi as an example. *Theory in Biosciences*, 141(1), 1-11.
 4. Klemm, D. et al. (2024). Hierarchical structure of *Fomes fomentarius*. *PLOS ONE*.
 
 ---

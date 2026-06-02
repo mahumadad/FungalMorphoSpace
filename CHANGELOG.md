@@ -1,5 +1,38 @@
 # CHANGELOG — FungalMorphoSpace
 
+## Unreleased (2026-06-02)
+
+### Fixed — validation integrity (audit follow-up)
+- **Genuine-pattern gate:** the validator now flags a result as a genuine periodic
+  pattern only when it resolves at least `MIN_GENUINE_SPOTS` (=4) components. A single
+  domain-scale blob (e.g. *Polyporus squamosus* under-resolved on a 512 grid) previously
+  passed the FFT QC and fell inside a wide density band, producing a spurious
+  "validation". New per-result fields: `pattern_genuine`, `validation_pass`.
+- **Sub-resolution warning:** the validator now computes `wavelengths_in_domain` and warns
+  (`under_resolved=True`) when fewer than `MIN_WAVELENGTHS_IN_DOMAIN` (=3) heuristic
+  wavelengths fit the domain, i.e. when the grid is too small to resolve the pattern.
+  *squamosus* on a 512 grid fits only ~1.3 wavelengths and is now flagged.
+- Both flags surface in the verbose output and the human-readable CSVs. The canonical
+  machine schema is unchanged (no contract bump).
+- **Density gating:** `density_predicted` is now reported only for a genuine, QC-passing
+  pattern (`validation_pass`), so a degenerate/under-resolved result cannot spuriously fall
+  inside the observed density band.
+- **Mid-run stability guard:** the solver re-checks for non-finite fields during the run
+  (the timestep is fixed after init) and stops cleanly with a flag instead of emitting
+  NaN-filled output. No-op for stable runs.
+- *Attempted and reverted:* a "no-peak spectrum" QC criterion (reject FFT peaks at the
+  frequency floor). It also rejected genuine large-wavelength patterns (*P. squamosus* at
+  1024: a real 28-spot pattern fell back to a worse autocorrelation estimate), so it was
+  reverted. The spot-count gate above covers the degenerate case robustly.
+
+### Fixed — references
+- Corrected the central **Kuhar et al. (2022)** citation, which carried a non-existent DOI
+  (`10.1007/s12064-022-00380-8`) and incorrect title/authors/pages. The verified reference
+  is `10.1007/s12064-022-00363-z`, *Theory in Biosciences* 141(1):1-11 (Kuhar, Terzzoli,
+  Nouhra, Robledo, Mercker). Fixed in `paper/references.bib` and `README.md`.
+- Added the standard modelling review **Davidson et al. (2011)**, *IMA Fungus* 2(1):33-37
+  (`10.5598/imafungus.2011.02.01.06`).
+
 ## v0.7.3.post6 (2026-01-03)
 
 ### Docs
