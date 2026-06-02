@@ -116,21 +116,23 @@ class MarconNetwork:
         self.uss, self.vss, self.wss = (float(s) for s in steady_state)
         self.gamma = float(gamma)
 
+    def _sat(self, d):
+        # Cubic self-saturation. Vanishes at the fixed point (d=0) with zero
+        # derivative, so neither the steady state nor the Jacobian (J=M) change;
+        # it only bounds the nonlinear growth. Clipped to avoid float overflow.
+        return self.gamma * np.clip(d, -50.0, 50.0) ** 3
+
     def f(self, u, v, w):
         du, dv, dw = u - self.uss, v - self.vss, w - self.wss
-        # Clip the cubic argument to avoid float overflow when a run diverges;
-        # the blow-up is still caught downstream. Unaffected near the fixed
-        # point (du -> 0), so the steady state is preserved exactly.
-        du_sat = np.clip(du, -50.0, 50.0)
-        return self.M[0, 0] * du + self.M[0, 1] * dv + self.M[0, 2] * dw - self.gamma * du_sat ** 3
+        return self.M[0, 0] * du + self.M[0, 1] * dv + self.M[0, 2] * dw - self._sat(du)
 
     def g(self, u, v, w):
         du, dv, dw = u - self.uss, v - self.vss, w - self.wss
-        return self.M[1, 0] * du + self.M[1, 1] * dv + self.M[1, 2] * dw
+        return self.M[1, 0] * du + self.M[1, 1] * dv + self.M[1, 2] * dw - self._sat(dv)
 
     def h(self, u, v, w):
         du, dv, dw = u - self.uss, v - self.vss, w - self.wss
-        return self.M[2, 0] * du + self.M[2, 1] * dv + self.M[2, 2] * dw
+        return self.M[2, 0] * du + self.M[2, 1] * dv + self.M[2, 2] * dw - self._sat(dw)
 
 
 class ThreeNodeSimulator:

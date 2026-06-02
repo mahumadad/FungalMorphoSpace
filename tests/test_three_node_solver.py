@@ -161,6 +161,30 @@ def test_spacing_from_spots_tracks_pattern_scale():
     assert np.isnan(spacing_from_spots(grid, 1))
 
 
+def test_marcon_network_bounded_under_strong_instability():
+    """The nonlinear kinetics must bound ALL three fields, not just u. A strongly
+    Turing-unstable M would let a purely-linear v/w grow without limit; the
+    saturation on every node must keep the simulated fields finite and bounded."""
+    from fungalmorphospace.core.three_node import MarconNetwork, ThreeNodeSimulator
+
+    M = np.array([[1.845, -1.771, 0.0],
+                  [0.323, -0.887, 3.249],
+                  [0.000, 3.384, 0.0]])  # strongly unstable (max growth ~2.6)
+    kin = MarconNetwork(M=M, steady_state=(1.0, 1.0, 1.0), gamma=0.5)
+    sim = ThreeNodeSimulator(kin, D_u=5.0, D_v=5.0, grid_size=32, dx=1.0, dt=0.01, seed=1)
+    rng = np.random.default_rng(1)
+    sim.u = 1.0 + 0.1 * rng.standard_normal((32, 32))
+    sim.v = 1.0 + 0.1 * rng.standard_normal((32, 32))
+    sim.w = 1.0 + 0.1 * rng.standard_normal((32, 32))
+
+    for _ in range(3000):
+        sim.step()
+
+    for field in (sim.u, sim.v, sim.w):
+        assert np.all(np.isfinite(field)), "fields must stay finite"
+        assert np.abs(field).max() < 100.0, "fields must stay bounded (saturated), not run away"
+
+
 def test_dispersion_growth_rate_matches_diagonal_eigenvalues():
     """For a diagonal (decoupled) system the growth rate at wavenumber k is the
     max of the diagonal eigenvalues shifted by -k^2 * D_i. Exact, hand-checkable."""
