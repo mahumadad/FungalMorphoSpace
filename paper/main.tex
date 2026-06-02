@@ -126,8 +126,7 @@ FungalMorphoSpace addresses this gap by providing:
         stability and selectable kinetics;
   \item Quantitative morphometric and topological analysis
         (wavelength, Euler characteristic, spacing statistics);
-  \item Calibrated parameter presets for three validated polypore
-        species;
+  \item Calibrated parameter presets for three polypore species;
   \item Reproducible, contract-enforced output schemas;
   \item Sensitivity analysis tools for systematic morphospace
         exploration.
@@ -326,7 +325,7 @@ FFT (if QC pass) $\to$ autocorrelation (if QC pass) $\to$ fallback
 \subsection{Calibrated species database}
 \label{sec:species}
 
-Table~\ref{tab:species} summarizes the three validated species.
+Table~\ref{tab:species} summarizes the three calibrated species.
 Parameters were calibrated empirically by adjusting $D_v/D_u$,
 $\rho$, and $b$ until simulated $\lambda$ matched observed pore
 spacings from the literature. The spatial calibration factor
@@ -335,7 +334,7 @@ scanning electron microscopy data~\cite{klemm2024}.
 
 \begin{table}[ht]
 \centering
-\caption{Calibrated species parameters and validation results.}
+\caption{Calibrated species parameters and resulting wavelengths.}
 \label{tab:species}
 \begin{tabular}{@{}lccccccc@{}}
 \toprule
@@ -359,6 +358,15 @@ an exploration and hypothesis-generation tool rather than an
 \emph{ab initio} predictor. Strategies for non-tautological parameter
 anchoring---e.g., deriving $D_\text{eff}$ from measured substrate
 porosity---are discussed in the project documentation.
+
+\paragraph{Why the presets retain large $D_v/D_u$.}
+The presets (notably $D_v/D_u = 3750$ for \textit{P.~squamosus}) use the
+classical two-species parameterization for continuity with the prior
+literature and for direct comparability across species within one kinetic
+family. Section~\ref{sec:equaldiff} shows that this large ratio is not the
+only way to reach the same scale---the diffusion length can equally be set
+at $D_u = D_v$ via the immobile-node module---so the extreme ratio is a
+modelling convenience of these presets, not a requirement of the mechanism.
 
 
 % ==================================================================
@@ -534,9 +542,9 @@ Beyond mycology, the software provides:
   \item \emph{Stability caveat for the immobile-node module.}
     Reaction-diffusion-ODE systems with an autocatalytic immobile component
     need not admit stable Turing patterns~\cite{marciniakczochra2016}; the
-    preset topology used here is non-autocatalytic (binding-type), but
-    long-time stability of the nonlinear patterns should be verified per
-    application.
+    preset topology used here is non-autocatalytic (binding-type), and the
+    nonlinear checks reported here are finite-time, so long-time stability of
+    the patterns should be verified per application.
   \item Simulations are 2D; real hymenophores are 3D surfaces
     (locally planar approximations are reasonable).
   \item Only $N = 3$ species are calibrated, giving limited statistical
@@ -612,9 +620,8 @@ responsibility for the content.
 % ==================================================================
 \section*{Funding}
 % ==================================================================
-% TODO (author): state funding sources, or "This research received no
-% specific grant from funding agencies in the public, commercial, or
-% not-for-profit sectors."
+This research received no specific grant from funding agencies in the
+public, commercial, or not-for-profit sectors.
 
 % ==================================================================
 \section*{Conflict of interest}
@@ -624,7 +631,9 @@ The author declares no competing financial or non-financial interests.
 % ==================================================================
 \section*{Acknowledgements}
 % ==================================================================
-% TODO (author): add acknowledgements as appropriate.
+The author thanks the developers of the open-source scientific Python
+ecosystem (NumPy, SciPy, scikit-image, Matplotlib) on which this software
+is built.
 
 
 % ==================================================================
