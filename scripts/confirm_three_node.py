@@ -92,17 +92,37 @@ def confirm_point(D, grid, T_target, out_dir, label):
 
 def main():
     ap = argparse.ArgumentParser(description="Nonlinear confirmation of the P2 scale law")
-    ap.add_argument("--quick", action="store_true", help="fast smoke (D=5 only, short)")
+    ap.add_argument("--quick", action="store_true", help="fast smoke (small grids, short)")
+    ap.add_argument("--bio", action="store_true",
+                    help="biological-scale points (brumalis + fomes scale; larger grids)")
+    ap.add_argument("--D", type=float, default=None,
+                    help="single custom equal-diffusion value (use with --grid; for the heavy "
+                         "squamosus-scale point, e.g. --D 270 --grid 1408)")
+    ap.add_argument("--grid", type=int, default=None, help="grid for the single custom point")
     ap.add_argument("--T", type=float, default=60.0, help="physical time per run")
     ap.add_argument("--out", type=str, default="results/three_node")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
-    # (D, grid) with grid ~ sqrt(D) so the dimensionless pattern is comparable
-    # across points; sqrt(D) scaling => same spot count, spacing scaling by sqrt.
-    points = [(5, 96), (20, 192)] if args.quick else [(5, 128), (20, 256), (50, 405)]
+    # (D, grid) with grid >= ~6 wavelengths and ~ sqrt(D) so the dimensionless
+    # pattern is comparable across points. A fungus needs a BIG grid: biological
+    # spacings (esp. squamosus ~230 px) require D ~ 270 and grid ~ 1408.
+    if args.D is not None and args.grid is not None:
+        points = [(args.D, args.grid)]
+    elif args.bio:
+        points = [(5, 256), (50, 640)]   # ~brumalis (30 px) and ~fomes (46 px) scale
+    elif args.quick:
+        points = [(5, 96), (20, 192)]
+    else:
+        points = [(5, 128), (20, 256), (50, 405)]
     T = 30.0 if args.quick else args.T
+
+    for (D, g) in points:
+        steps = int(T / (0.8 / (4.0 * D)))
+        if g >= 768:
+            print(f"  [heavy] D={D} grid={g}: ~{steps} steps x {g}^2 cells -- this can take "
+                  f"tens of minutes to hours; let it run.")
 
     rows = [confirm_point(D, g, T, out, "confirm") for (D, g) in points]
 
