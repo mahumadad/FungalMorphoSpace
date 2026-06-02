@@ -50,6 +50,16 @@ from ..core.turing_simulator import TuringSimulator
 from fungalmorphospace import __version__
 from .species_database import SPECIES_DATABASE, CALIBRATION_UM_PER_PX
 
+# --- Validation gates (audit 2026-06-02; see docs/ESTRATEGIA_TESIS.md §3.2) ---
+#: Minimum number of resolved spots/components for a pattern to count as a
+#: genuine periodic Turing pattern rather than a single domain-scale blob.
+#: A single blob (e.g. squamosus under-resolved on a 512 grid) otherwise passes
+#: the FFT QC and falls inside a wide density band, yielding spurious validation.
+MIN_GENUINE_SPOTS: int = 4
+#: Minimum number of (heuristic) wavelengths that must fit across the domain for
+#: the grid to resolve a periodic pattern. Below this the run is under-resolved.
+MIN_WAVELENGTHS_IN_DOMAIN: float = 3.0
+
 
 def select_wavelength_px(
     metrics: Dict[str, Any],
@@ -618,9 +628,47 @@ class IntegratedSimulationRunner:
             "inhibitor_field_path": inhibitor_path or "",
         }
 
+        # --- Fix 1: genuine-pattern gate (audit 2026-06-02) ---
+        # Require a minimum number of resolved spots before treating the
+        # wavelength as a genuine periodic pattern. A single domain-scale blob
+        # (spots=1) must not pass validation just because its FFT peak and a
+        # wide density band happen to align.
+        result["pattern_genuine"] = bool(result["spots"] >= MIN_GENUINE_SPOTS)
+        result["validation_pass"] = bool(result["wavelength_qc_pass"] and result["pattern_genuine"])
+        if not result["pattern_genuine"]:
+            result["wavelength_qc_reason"] = (
+                f"{result['wavelength_qc_reason']}; not genuine "
+                f"(spots={result['spots']} < {MIN_GENUINE_SPOTS})"
+            )
+
+        # --- Fix 4: sub-resolution warning (audit 2026-06-02) ---
+        # Use the measured wavelength when available (it reflects the true,
+        # nonlinear pattern scale); fall back to the heuristic lambda only when
+        # no wavelength was measured. The heuristic 2*pi*sqrt(D_v/D_u)
+        # overestimates the real scale (~2x for squamosus), which would
+        # over-warn on grids that do resolve a genuine pattern.
+        lam_ref = (
+            float(result["wavelength_px"])
+            if (result["wavelength_px"] and result["wavelength_px"] > 0)
+            else float(getattr(sim, "lambda_theoretical", float("nan")))
+        )
+        domain_px = float(sim.grid_size) * float(sim.dx)
+        wl_in_domain = (domain_px / lam_ref) if (np.isfinite(lam_ref) and lam_ref > 0) else float("nan")
+        result["wavelengths_in_domain"] = float(wl_in_domain) if np.isfinite(wl_in_domain) else float("nan")
+        result["under_resolved"] = bool(np.isfinite(wl_in_domain) and wl_in_domain < MIN_WAVELENGTHS_IN_DOMAIN)
+        if result["under_resolved"]:
+            logging.warning(
+                f"Under-resolved: only {wl_in_domain:.1f} heuristic wavelengths fit the "
+                f"{int(domain_px)}px domain (< {MIN_WAVELENGTHS_IN_DOMAIN}); increase --grid for {sp_key}."
+            )
+
         # --- Predicted pore density from wavelength + global calibration ---
+        # Fix 3 (audit 2026-06-02): only report a density for a genuine,
+        # QC-passing pattern. A degenerate or under-resolved result must not
+        # produce a "predicted density" that could spuriously fall inside the
+        # observed band.
         result["density_predicted"] = 0.0
-        if result["wavelength_px"] and result["wavelength_px"] > 0:
+        if result["validation_pass"] and result["wavelength_px"] and result["wavelength_px"] > 0:
             # Convert wavelength (px) to physical spacing (um) via calibration.
             spacing_um: float = float(result["wavelength_px"]) * float(CALIBRATION_UM_PER_PX)
             if spacing_um > 0:
@@ -630,7 +678,9 @@ class IntegratedSimulationRunner:
         if verbose:
             print("\n  Results:")
             print(f"    Wavelength(best): {result['wavelength_px']:.2f} px ({result['wavelength_method']}, QC={result['wavelength_qc_pass']})")
-            print(f"    Spots: {result['spots']}")
+            print(f"    Spots: {result['spots']}  (genuine={result['pattern_genuine']}, validation_pass={result['validation_pass']})")
+            if result["under_resolved"]:
+                print(f"    ⚠ under-resolved: {result['wavelengths_in_domain']:.1f} wavelengths in domain (< {MIN_WAVELENGTHS_IN_DOMAIN})")
             print(f"    Density predicted: {result['density_predicted']:.2f} pores/mm")
             print(f"    Pattern saved: {pattern_path}")
 
@@ -691,6 +741,12 @@ class IntegratedSimulationRunner:
             "wavelength_fft_peak_ratio": float(run_results[0].get("wavelength_fft_peak_ratio", np.nan)),
             "wavelength_autocorr_px": float(run_results[0].get("wavelength_autocorr_px", np.nan)),
             "wavelength_autocorr_qc_pass": bool(run_results[0].get("wavelength_autocorr_qc_pass", False)),
+            # Validation gates (audit 2026-06-02). Genuine gate recomputed from
+            # the averaged spot count; resolution flag is grid-bound (same across runs).
+            "pattern_genuine": bool((int(np.nanmean(spots)) if np.isfinite(np.nanmean(spots)) else 0) >= MIN_GENUINE_SPOTS),
+            "validation_pass": bool(run_results[0].get("wavelength_qc_pass", False) and ((int(np.nanmean(spots)) if np.isfinite(np.nanmean(spots)) else 0) >= MIN_GENUINE_SPOTS)),
+            "under_resolved": bool(run_results[0].get("under_resolved", False)),
+            "wavelengths_in_domain": float(run_results[0].get("wavelengths_in_domain", np.nan)),
             # Time-step metadata (same across replicates)
             "dt_requested": float(run_results[0].get("dt_requested", np.nan)),
             "dt_final": float(run_results[0].get("dt_final", np.nan)),
@@ -902,6 +958,9 @@ class IntegratedSimulationRunner:
                         else float("nan"),
                         "Wavelength_method": r.get("wavelength_method", ""),
                         "Wavelength_QC": bool(r.get("wavelength_qc_pass", False)),
+                        "Pattern_genuine": bool(r.get("pattern_genuine", True)),
+                        "Validation_pass": bool(r.get("validation_pass", r.get("wavelength_qc_pass", False))),
+                        "Under_resolved": bool(r.get("under_resolved", False)),
                         "Spots": int(r.get("spots", 0) or 0),
                         "Density_predicted_pores_per_mm": round(float(r.get("density_predicted", float("nan"))), 3)
                         if r.get("density_predicted") is not None
@@ -1201,6 +1260,9 @@ class IntegratedSimulationRunner:
                     "λ(best) (px)": f"{float(r.get('wavelength_px', 0.0)):.2f}" if r.get("wavelength_px") else "",
                     "λ(method)": r.get("wavelength_method", ""),
                     "λ(QC)": bool(r.get("wavelength_qc_pass", False)),
+                    "Pattern_genuine": bool(r.get("pattern_genuine", True)),
+                    "Validation_pass": bool(r.get("validation_pass", r.get("wavelength_qc_pass", False))),
+                    "Under_resolved": bool(r.get("under_resolved", False)),
                     "Spots": r.get("spots"),
                     "Euler_chi": r.get("euler_chi"),
                     "Holes": r.get("holes"),

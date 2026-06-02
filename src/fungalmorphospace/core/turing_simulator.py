@@ -507,6 +507,21 @@ class TuringSimulator:
             self.step()
 
             if step % check_interval == 0:
+                # Fix 5 (audit 2026-06-02): re-check stability during the run.
+                # The timestep is fixed after init, so a stiff reaction regime
+                # could drive a blow-up that the initial CFL check cannot
+                # foresee. Detect non-finite fields and stop cleanly with a
+                # flag instead of silently producing NaN-filled output. This is
+                # a no-op for stable runs (fields remain finite).
+                if not (np.all(np.isfinite(self.u)) and np.all(np.isfinite(self.v))):
+                    logging.warning(
+                        f"Non-finite field at step {step}; stopping (possible stiffness/CFL blow-up). "
+                        f"Consider a smaller dt or grid."
+                    )
+                    self.stability_info["had_stability_warning"] = True
+                    self.stability_info["blowup_step"] = int(step)
+                    break
+
                 curr: float = self.compute_pattern_energy()
                 self.energy_history.append(curr)
                 self.time_history.append(step * self.dt)
