@@ -389,6 +389,31 @@ original es un proxy de esa longitud, no un requisito fundamental.
 > La ley √D predice ~16 spots con spacing ~230 px; ese punto cierra la figura spacing-vs-√D
 > abarcando las 3 especies.
 
+### 10.8 Comparación de mecanismos, rango de validez y robustez
+
+**#4 — Dos mecanismos, una longitud de difusión.** A cinética de reacción fija:
+
+| Mecanismo | parámetro | λ* a parámetro alto |
+|-----------|-----------|---------------------|
+| Gierer-Meinhardt (2 nodos, disparidad) | ratio D_v/D_u = 3750 | ~31 px |
+| Nodo inmóvil (3 nodos, D igual) | D absoluta = 500 | ~125 px |
+
+GM crece lentísimo con el ratio (3750 → solo 31 px); para λ biológica grande exigiría ratios de
+decenas de miles (molecularmente absurdo). El nodo inmóvil alcanza λ grande eficientemente vía
+**D absoluta** (acotada por difusión molecular real, ajustable por el medio). **Punto profundo:**
+GM (ratio), nodo-inmóvil (D absoluta) y el `rho` del modelo original (D_eff=D/rho) son knobs
+sobre la **misma cantidad — la longitud de difusión √(D_eff/reacción)**. No hay un parámetro
+"fundamental"; hay una longitud de difusión alcanzable por varias vías. (Cierre de la tautología.)
+
+**#3 — Rango de validez de √D.** La banda de Turing del mecanismo nodo-inmóvil existe para
+**D ∈ [0.01, ~1000]** (≥4 órdenes de magnitud, cubre el rango biológico); sobre D≈2000 la banda
+desaparece (límite superior del mecanismo equal-D). El λ* lineal se satura aparentemente cerca
+del borde superior por resolución del scan a k→0 (detalle numérico, no físico).
+
+**#5 — Robustez.** Perturbando todas las entradas de M: la topología **sigue Turing en el 100%
+de los casos a ±20% y el 97% a ±40%**. El mecanismo no es de filo de cuchillo — es robusto, lo
+que respalda su plausibilidad biológica.
+
 ### 10.5 Lección de método
 
 La simulación + conteo de spots puede producir **falsos positivos de patronamiento**. El
