@@ -43,9 +43,10 @@ from fungalmorphospace.core.three_node import (  # noqa: E402
 )
 from fungalmorphospace.analysis.topology_analyzer import TopologyAnalyzer  # noqa: E402
 
-# A w<->v Turing-unstable topology at equal diffusion (see ESTRATEGIA_TESIS.md
-# §10.6): u self-activation, u/v activator-inhibitor core, immobile w coupled to
-# the inhibitor v. Verified Turing-unstable at D_u=D_v with lambda* ~ sqrt(D).
+# A w<->v Turing-unstable topology at equal diffusion (see the project
+# manuscript): u self-activation, u/v activator-inhibitor core, immobile w
+# coupled to the inhibitor v. Verified Turing-unstable at D_u=D_v with
+# lambda* ~ sqrt(D).
 BASE_M = np.array([[0.352, -2.135, 0.0],
                    [0.992, -1.190, 2.422],
                    [0.000, 0.795, 0.0]])

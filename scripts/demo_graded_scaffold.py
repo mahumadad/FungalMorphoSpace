@@ -3,7 +3,7 @@
 
 Idea (user): seed the pattern centrally and grade it so the centre is denser,
 like shark denticles (Turing + initiator + positional bias). The sqrt(D) scale
-law (docs/ESTRATEGIA_TESIS.md §10.6) gives the recipe: spacing ~ sqrt(D), so a
+law (the manuscript) gives the recipe: spacing ~ sqrt(D), so a
 radial diffusion gradient with SMALL D at the centre yields a FINER (denser)
 pattern there and a COARSER one at the rim -- a functionally graded porosity.
 

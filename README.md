@@ -115,8 +115,6 @@ FungalMorphoSpace/
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 
-Additional thesis-specific documentation is available in `docs/archive/`.
-
 ## Scientific Background
 
 The software implements the Gierer-Meinhardt reaction-diffusion system:
@@ -128,7 +126,7 @@ dv/dt = D_v * laplacian(v) + rho * (u^2 - b*v)
 
 A key insight is that effective diffusion D_eff = D/rho jointly determines pattern wavelength, explaining cases where increasing the diffusion ratio *decreases* wavelength when reaction intensity increases simultaneously.
 
-**Important note:** Parameters are currently calibrated empirically (fitted to observed morphologies). The software serves as an exploration and hypothesis-generation tool rather than an ab initio predictor. See `docs/archive/RUTAS_ANCLAJE_NO_TAUTOLOGICO.md` for a discussion of non-tautological anchoring strategies, and `docs/ESTRATEGIA_TESIS.md` for the publication roadmap.
+**Important note:** Parameters are currently calibrated empirically (fitted to observed morphologies). The software serves as an exploration and hypothesis-generation tool rather than an ab initio predictor.
 
 **Grid resolution matters.** Large-wavelength species need a domain that fits several wavelengths. *Polyporus squamosus* defaults to a 1024 grid (where it forms ~28 genuine spots); forcing a smaller grid (e.g. `--grid 512`) collapses it to a single domain-scale blob (1 spot) that is *not* a genuine periodic pattern. The validator now flags this: results report `pattern_genuine` (≥4 resolved spots) and `under_resolved` (fewer than ~3 measured wavelengths fit the domain), and `validation_pass` combines the wavelength QC with the genuine-pattern gate. Keep *squamosus* at its default grid or larger. Note: even at adequate resolution the model's *squamosus* wavelength (~188 px) undershoots the biological target (235 px ≈ 2000 µm) by ~18% — a known limitation, not corrected by tuning the target.
 

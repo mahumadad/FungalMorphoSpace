@@ -1,6 +1,6 @@
 """Tests for the 3-node reaction-diffusion solver (P2 reformulation).
 
-See docs/superpowers/specs/2026-06-02-three-node-reformulation-design.md
+See the project manuscript (paper/)
 """
 from __future__ import annotations
 

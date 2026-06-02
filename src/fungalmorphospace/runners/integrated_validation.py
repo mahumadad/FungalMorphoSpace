@@ -50,7 +50,7 @@ from ..core.turing_simulator import TuringSimulator
 from fungalmorphospace import __version__
 from .species_database import SPECIES_DATABASE, CALIBRATION_UM_PER_PX
 
-# --- Validation gates (audit 2026-06-02; see docs/ESTRATEGIA_TESIS.md §3.2) ---
+# --- Validation gates (audit 2026-06-02) ---
 #: Minimum number of resolved spots/components for a pattern to count as a
 #: genuine periodic Turing pattern rather than a single domain-scale blob.
 #: A single blob (e.g. squamosus under-resolved on a 512 grid) otherwise passes

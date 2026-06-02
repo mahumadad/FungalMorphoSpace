@@ -86,3 +86,9 @@ paper/*.out
 paper/*.synctex.gz
 paper/*.toc
 paper/*.xdv
+
+# Private working notes / thesis material (kept locally, not published)
+docs/ESTRATEGIA_TESIS.md
+docs/REVISION_BIBLIOGRAFICA_P2.md
+docs/superpowers/
+docs/archive/

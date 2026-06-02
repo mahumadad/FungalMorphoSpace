@@ -3,7 +3,7 @@
 
 All analyses are *analytical* (linear dispersion relation, no simulation), so the
 whole script runs in seconds. It reproduces the findings in
-docs/ESTRATEGIA_TESIS.md §10.6:
+the manuscript:
 
   1. SIGN ENUMERATION — for the 243 sign patterns of the immobile node's
      couplings (with a fixed activator-inhibitor core), which admit a Turing

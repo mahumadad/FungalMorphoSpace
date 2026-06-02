@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from fungalmorphospace.core.three_node import fastest_growing_wavelength  # noqa: E402
 
-# Equal-diffusion w<->v Turing topology (ESTRATEGIA_TESIS.md §10.6).
+# Equal-diffusion w<->v Turing topology (the manuscript).
 BASE_M = np.array([[0.352, -2.135, 0.0],
                    [0.992, -1.190, 2.422],
                    [0.000, 0.795, 0.0]])

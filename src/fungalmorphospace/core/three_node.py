@@ -5,7 +5,7 @@ Two morphogens (u, v) diffuse; a third node (w, hyphal density) is immobile
 can be generated without an extreme diffusion-ratio (Marcon et al., eLife 2016:
 Turing patterns with equally diffusing signals plus a non-diffusible node).
 
-See docs/superpowers/specs/2026-06-02-three-node-reformulation-design.md.
+See the project manuscript (paper/).
 
 This module is isolated from the validated 2-field engine (turing_simulator.py)
 so the tool-paper path stays stable.

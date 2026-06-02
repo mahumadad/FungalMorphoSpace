@@ -17,7 +17,7 @@ Run it in your own terminal (NOT inside Claude) to watch progress:
 
 Outputs CSVs + FINDINGS.md under results/three_node/.
 
-See docs/superpowers/specs/2026-06-02-three-node-reformulation-design.md.
+See the project manuscript (paper/).
 """
 from __future__ import annotations
 
