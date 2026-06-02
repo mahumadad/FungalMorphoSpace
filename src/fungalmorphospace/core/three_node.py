@@ -28,18 +28,31 @@ def dispersion_growth_rate(M, D, k):
     return float(np.max(eig.real))
 
 
-def fastest_growing_wavelength(M, D, k_max=3.0, n_k=600):
+def fastest_growing_wavelength(M, D, k_max=3.0, n_k=600, _cap=64.0):
     """Wavelength ``2*pi/k*`` of the fastest-growing finite-k mode IF the system
-    is Turing-unstable: stable at k->0 but with a positive growth band at some
-    k>0. Returns NaN when there is no diffusion-driven instability at finite k
-    (so no intrinsic pattern wavelength is selected)."""
-    ks = np.linspace(1e-6, float(k_max), int(n_k))
-    growth = np.array([dispersion_growth_rate(M, D, k) for k in ks])
+    is Turing-unstable: stable at k->0 but with a positive growth band peaking at
+    a finite, interior k. Returns NaN when there is no diffusion-driven
+    instability, or when the peak never settles at a finite k.
+
+    Because the immobile node has D=0, high-k modes are not damped to -inf, so the
+    growth curve can keep rising toward a plateau (a fine-scale instability with no
+    selected wavelength). The scan auto-widens until the peak is interior; if it is
+    still at the boundary at ``_cap`` the wavelength is undefined (NaN) -- this is
+    the correct verdict, not the bogus edge value 2*pi/k_max."""
     g0 = dispersion_growth_rate(M, D, 0.0)
-    i = int(np.argmax(growth))
-    if growth[i] <= 0.0 or growth[i] <= g0 or ks[i] <= 1e-6:
-        return float("nan")
-    return float(2.0 * np.pi / ks[i])
+    k_hi = float(k_max)
+    while True:
+        ks = np.linspace(1e-6, k_hi, int(n_k))
+        growth = np.array([dispersion_growth_rate(M, D, k) for k in ks])
+        i = int(np.argmax(growth))
+        if growth[i] <= 0.0 or growth[i] <= g0:
+            return float("nan")  # no instability, or maximal growth is at k->0
+        if i >= len(ks) - 1:     # peak at the scan edge -> widen and retry
+            if k_hi >= _cap:
+                return float("nan")  # still rising at the cap: no finite-scale selection
+            k_hi *= 2.0
+            continue
+        return float(2.0 * np.pi / ks[i])
 
 
 def spacing_from_spots(grid, spots):

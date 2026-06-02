@@ -205,6 +205,28 @@ def test_fastest_growing_wavelength_detects_turing_band():
     assert np.isfinite(lam) and lam > 0
 
 
+def test_fastest_growing_wavelength_invariant_to_initial_kmax():
+    """The reported wavelength must not depend on the initial k-scan bound: if
+    the true peak lies beyond k_max the function must widen the scan to find it,
+    not report the bogus edge value 2*pi/k_max."""
+    from fungalmorphospace.core.three_node import fastest_growing_wavelength
+
+    M = np.array([[1.0, -1.5, 0.0],
+                  [2.0, -2.2, 0.0],
+                  [0.0, 0.0, -1.0]])
+    D = [0.05, 1.0, 0.0]
+
+    lam_ref = fastest_growing_wavelength(M, D, k_max=20.0)  # wide enough: ground truth
+    assert np.isfinite(lam_ref)
+    # Auto-widening recovers the true peak from a reasonable initial bound below k*.
+    assert np.isclose(fastest_growing_wavelength(M, D, k_max=1.0), lam_ref, rtol=0.05)
+    # A pathologically narrow scan must never fabricate the bogus edge value 2*pi/k_max:
+    # it returns NaN (honest "undetermined") or the correct value, never the artifact.
+    lam_tiny = fastest_growing_wavelength(M, D, k_max=0.3)
+    assert np.isnan(lam_tiny) or np.isclose(lam_tiny, lam_ref, rtol=0.05)
+    assert not np.isclose(lam_tiny, 2.0 * np.pi / 0.3, rtol=0.05)
+
+
 def test_marcon_network_reactions_vanish_at_steady_state():
     """A linear 3-node interaction network must have zero net reaction at its
     declared homogeneous steady state (so it is a genuine fixed point about
